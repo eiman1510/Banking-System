@@ -1,0 +1,138 @@
+﻿#pragma once
+#include<iostream>
+#include<string>
+#include"transactions.h"
+#include"dll.h"
+using namespace std;
+
+
+class Accounts
+{
+private:
+        int acc_num;
+        string acc_title;
+        int acc_balance;
+public:
+
+
+        DLList<Transaction> history;
+        using Iterator = typename DLList<Transaction>::lit;
+
+
+        Iterator begin() {
+                return Iterator(history.currentnode());
+        }
+
+
+        Iterator end() {
+                return Iterator(nullptr);
+        }
+        Accounts();
+        Accounts(int n, string tit, int b);
+        Accounts operator=(Accounts& copy);
+        void setaccnumb(int numb);
+        int getAccNumb();
+        void TransactionMethod(int n);
+        void InputTransaction(Transaction temp, int n);
+        int getbalance();
+        void DisplayData();
+        ~Accounts();
+};
+
+
+
+
+Accounts::Accounts()
+{
+        acc_num = 0;
+        acc_balance = 0;
+}
+
+
+Accounts::Accounts(int n, string tit, int b)
+{
+        acc_num = n;
+        acc_title = tit;
+        acc_balance = b;
+}
+
+
+Accounts Accounts::operator=(Accounts& copy)
+{
+        if (this != &copy)
+        {
+                acc_num = copy.acc_num;
+                acc_balance = copy.acc_balance;
+                acc_title = copy.acc_title;
+                history = copy.history;
+
+
+        }
+        return (*this);
+}
+
+
+//this sets the account number with the acc_serial of bank class when an account is created
+void Accounts::setaccnumb(int numb)
+{
+        acc_num = numb;
+}
+
+
+//return the account numbr for merging and input transaction
+int Accounts::getAccNumb()
+{
+        return acc_num;
+}
+
+
+//in this the user is prompt to input detail of the trasaction and insert that trasaction in the list of account
+void Accounts::TransactionMethod(int n) //takes the trasaction number from the trans_serial from bank
+{
+        Transaction temp;
+        temp.InputDetail(n);
+        if (temp.gettype() == 1)
+                acc_balance += temp.getamount();
+        else if (temp.gettype() == 2)
+                acc_balance -= temp.getamount();
+
+
+        history.insertatstart(temp);
+}
+
+
+//this function insert transaction using an object of transaction..this is being used to set the default vales in main
+void Accounts::InputTransaction(Transaction temp, int n)
+{
+
+
+        temp.setid(n);
+        history.insertatstart(temp);
+}
+
+
+//this return the balance present in the account..this is used while merging two accounts 
+int Accounts::getbalance()
+{
+        return acc_balance;
+}
+
+
+//this function dipslay the data of the account along with all the transaction taht has been taken place on the account
+void Accounts::DisplayData()
+{
+        cout << "Account number : " << acc_num << "\nAccount title : " << acc_title << "\nAccount balance : " << acc_balance << endl;
+        cout << "Transaction history : " << endl;
+        Iterator it = history.end();
+        for (; it != begin(); --it) {
+                Transaction& transaction = *it;
+                transaction.DisplayDetail();
+        }
+}
+
+
+Accounts::~Accounts()
+{
+        acc_balance = 0;
+        acc_num = 0;
+}

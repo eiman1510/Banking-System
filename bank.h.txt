@@ -1,0 +1,277 @@
+﻿#pragma once
+#pragma once
+#include<iostream>
+#include"accounts.h"
+
+
+using namespace std;
+
+
+class Bank
+{
+        int trans_serial;
+        int acc_serial;
+
+
+public:
+        DLList<Accounts> accounts;
+        using Iterator = typename DLList<Accounts>::lit;
+
+
+        Iterator begin() {
+                return Iterator(accounts.currentnode());
+        }
+
+
+        Iterator end() {
+                return Iterator(nullptr);
+        }
+        Bank();
+        Bank operator=(Bank& copy);
+        void AddAccount();
+        void addAccount(string name, int balance);
+        void AddTransaction();
+        void addTransaction(Transaction temp, int id);
+        void deleteaccount(int accountID);
+        void MergeAccounts();
+        void DisplayBankDetail();
+        ~Bank();
+};
+
+
+
+
+Bank::Bank()
+{
+        trans_serial = 0;
+        acc_serial = 0;
+}
+
+
+Bank Bank::operator=(Bank& copy)
+{
+        if (this != &copy)
+        {
+                trans_serial = copy.trans_serial;
+                acc_serial = copy.acc_serial;
+        }
+        return (*this);
+}
+
+
+//this function add a new account in the list accounts ie in the bank
+void Bank::AddAccount()
+{
+        cout << "Account number : " << acc_serial << endl;
+        int bal;
+        string tit;
+        cout << "Enter title of account : ";
+        cin.ignore();
+        getline(cin, tit);
+        cout << "Enter current balance : ";
+        cin >> bal;
+        Accounts a(acc_serial, tit, bal);
+        accounts.insertatstart(a);
+        acc_serial++;                  //this is incremented so that every account gets a unique account number
+}
+
+
+//this adds account using parameter list...this is being used in main for default purpose
+void Bank::addAccount(string name, int balance)
+{
+        Accounts a(acc_serial, name, balance);
+        accounts.insertatstart(a);
+        acc_serial++;
+}
+
+
+// this function input transaction in the history of transaction of the account being selected
+void Bank::AddTransaction()
+{
+        int id;         //ask the user for the account id for the transaction to take place
+        cout << "Enter account number : ";
+        cin >> id;
+
+
+        for (Iterator it = accounts.begin(); it != end(); ++it) {
+                Accounts& account = *it;
+                if (account.getAccNumb() == id) {
+                        account.TransactionMethod(trans_serial);
+                        trans_serial++;
+                        return;
+                }
+        }
+
+
+        cout << "Account number " << id << " not found." << endl;
+}
+
+
+//this add transaction is used to input default transaction in main
+void Bank::addTransaction(Transaction temp, int id)
+{
+        for (Iterator it = accounts.begin(); it != end(); ++it) {
+                Accounts& account = *it;
+                if (account.getAccNumb() == id) {
+                        account.InputTransaction(temp, trans_serial);
+                        trans_serial++;
+                        return;
+                }
+        }
+}
+
+
+//this accounts take an account number and delete the account and its history from the bank
+void Bank::deleteaccount(int accountID)
+{
+        Iterator it = accounts.begin();
+
+
+        while (it != accounts.end())
+        {
+                Accounts& account = *it;
+
+
+                if (account.getAccNumb() == accountID)
+                {
+                        it = accounts.erase(it);
+                        cout << "Account " << accountID << " has been deleted." << endl;
+                        return;
+                }
+                else
+                {
+                        ++it;
+                }
+        }
+
+
+        cout << "Account " << accountID << " not found." << endl;
+}
+
+
+//this function merge the two accounts
+//takes in the ids of two accounts,search them in the accounts list store then in temp,merge their transaction choronologically
+//add their balances give new account number using acc_serial and then delete the two previous accounts
+void Bank::MergeAccounts()
+{
+        int account1ID, account2ID;
+        cout << "Enter the account number of the two accounts you want to merge : \nFirst account : ";
+        cin >> account1ID;
+        cout << "\nSecond account : ";
+        cin >> account2ID;
+
+
+        Accounts* account1 = nullptr;
+        Accounts* account2 = nullptr;
+
+
+        for (Iterator it = accounts.begin(); it != end(); ++it)          //searching the accounts
+        {
+                Accounts& account = *it;
+                if (account.getAccNumb() == account1ID)
+                {
+                        account1 = &account;
+                }
+                else if (account.getAccNumb() == account2ID)
+                {
+                        account2 = &account;
+                }
+        }
+
+
+        if (account1 == nullptr || account2 == nullptr)            //if any of account number not found
+        {
+                cout << "One or both accounts not found." << endl;
+                return;
+        }
+
+
+        DLList<Transaction> mergedList;
+
+
+
+
+        DLList<Transaction>::lit it1 = account1->history.begin();         //access the histories
+        DLList<Transaction>::lit it2 = account2->history.begin();
+        int j = 0, k = 0;
+        while (j < account1->history.getsize() && k < account2->history.getsize())   //loop to input histories in new list of transaction
+        {
+                if ((*it1).getid() <= (*it2).getid())
+                {
+                        mergedList.insertatend(*it1);
+                        ++it1;
+                        j++;
+                }
+                else
+                {
+                        mergedList.insertatend(*it2);
+                        ++it2;
+                        k++;
+                }
+        }
+
+
+        while (j < account1->history.getsize())
+        {
+                mergedList.insertatend(*it1);
+                ++it1;
+                j++;
+        }
+
+
+        while (k < account2->history.getsize())
+        {
+                mergedList.insertatend(*it2);
+                ++it2;
+                k++;
+        }
+
+
+        int newAccountID = acc_serial;
+        int newAccountBalance = account1->getbalance() + account2->getbalance();      //adding the balance
+        string newAccountTitle = "Merged Account";
+
+
+        Accounts mergedAccount(newAccountID, newAccountTitle, newAccountBalance);    //default accounts called
+        typename DLList<Transaction>::lit it = mergedList.begin();
+
+
+        int i = 0;
+        for (; i < mergedList.getsize(); i++, ++it) {
+                Transaction& trans = *it;
+                mergedAccount.InputTransaction(trans, trans_serial);  //input the new list of transaction into the new account
+                trans_serial++;
+        }
+
+
+        accounts.insertatend(mergedAccount);       //input new account in bank
+        acc_serial++;
+
+
+        deleteaccount(account1ID);         //deleting old account
+        deleteaccount(account2ID);
+
+
+        cout << "Accounts " << account1ID << " and " << account2ID << " have been merged into Account " << newAccountID << endl;
+}
+
+
+//this display the record of all acoounts of bank
+void Bank::DisplayBankDetail()
+{
+        Iterator it = accounts.end();
+        for (; it != begin(); --it) {
+                Accounts& acc = *it;
+                acc.DisplayData();
+                cout << "__________________________________________________________\n";
+        }
+}
+
+
+Bank::~Bank()
+{
+
+
+        trans_serial = 0;
+        acc_serial = 0;
+}

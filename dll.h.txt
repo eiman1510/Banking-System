@@ -1,0 +1,260 @@
+﻿// the double link list class
+#include<iostream>
+#include"others.h"
+using namespace std;
+
+
+template<class t>
+class DLList
+{
+        struct Node                 //nested struct of Node 
+        {
+        public:
+                t data;
+                Node* next;
+                Node* prev;
+                Node()                   //constructor
+                {
+                        next = NULL;
+                        prev = NULL;
+                }
+                Node(t val)            //overloaded constructed
+                {
+                        data = val;
+                        next = 0;
+                        prev = 0;
+                }
+                Node(t& val)           // copy constrctor
+                {
+                        data = val.data;
+                        next = val.next;
+                        prev = val.prev;
+                }
+        };
+        Node* head;
+        Node* tail;
+        int size;
+        class ListIterator
+        {
+        private:
+                Node* current;
+
+
+        public:
+                ListIterator() { current = nullptr; }
+                ListIterator(Node* ptr) { current = ptr; }
+                ListIterator& operator++()
+                {
+                        if (current) current = current->next;
+                        return *this;
+                }
+                ListIterator& operator--()
+                {
+                        if (current) current = current->prev;
+                        return *this;
+                }
+                bool operator!=(const ListIterator& other) const
+                {
+                        return current != other.current;
+                }
+                bool NotNull()
+                {
+                        return (current != nullptr);
+                }
+                bool NextNotNull()
+                {
+                        return (current->next != nullptr);
+                }
+                Node* First()
+                {
+                        return current;
+                }
+                Node* Next()
+                {
+                        return current->next;
+                }
+                t& operator*()
+                {
+                        return current->data;
+                }
+        };
+
+
+public:
+        typedef ListIterator lit;
+        const lit begin() const { lit I(head); return I; }
+        const lit end() const { lit I(tail); return I; }
+        lit currentnode() { lit I; return I.First(); }
+        lit nextnode() { lit I; return I.Next(); }
+        typename DLList<t>::lit erase(lit position);
+        int getsize() { return size; }
+        DLList()
+        {
+                head = 0;
+                tail = 0;
+                size = 0;
+        }
+        DLList& operator=(const DLList& copy)
+        {
+                if (this != &copy)
+                {
+                        Node* temp = copy.head;
+                        while (temp != nullptr)
+                        {
+                                insertatend(temp->data);
+                                temp = temp->next;
+                        }
+                }
+                return (*this);
+        }
+
+
+        void insertatstart(t const element);
+        void insertatend(t const element);
+        void print()const;
+        void deleteatstart();
+        void deleteatend();
+        ~DLList()
+        {
+                /*while (head != nullptr)
+                {
+                        Node* temp = head->next;
+                        delete head;
+                        head = temp;
+
+
+                }
+                tail = nullptr, size = 0;*/
+
+
+        }
+};
+
+
+
+
+template<class t>
+void DLList<t>::insertatstart(t const element)
+{
+        Node* temp = new Node(element);
+        if (size != 0) {
+                temp->next = head;
+                temp->prev = NULL;
+                head->prev = temp;
+                head = temp;
+        }
+        else
+        {
+                head = temp;
+                tail = temp;
+        }
+        size++;
+}
+
+
+template<class t>
+void DLList<t>::insertatend(t const element)
+{
+        Node* temp = new Node(element);
+        if (size != 0) {
+                temp->prev = tail;
+                temp->next = NULL;
+                tail->next = temp;
+                tail = temp;
+        }
+        else {
+                head = temp;
+                tail = temp;
+        }
+        size++;
+}
+
+
+template<class t>
+void DLList<t>::print()const
+{
+        Node* temp = head;
+        for (int i = 0; i < size; i++)
+        {
+                temp->data.DisplayDetail();
+                temp = temp->next;
+        }
+        cout << endl;
+}
+
+
+template<class t>
+void DLList<t>::deleteatstart()
+{
+        Node* temp;
+        if (head != nullptr) {
+                temp = head->next;
+                temp->prev = NULL;
+                delete head;
+                head = temp;
+        }
+        size--;
+}
+
+
+template<class t>
+void DLList<t>::deleteatend()
+{
+        Node* temp;
+        if (size != 0) {
+                if (size == 1) {
+                        delete head;
+                        head = nullptr;
+                        tail = nullptr;
+                }
+                else {
+                        temp = tail->prev;
+                        temp->next = NULL;
+                        delete temp;
+                        tail = temp;
+                }
+        }
+        size--;
+}
+
+
+template<class t>
+typename DLList<t>::lit DLList<t>::erase(lit position)         //this function delete a particular note from between the list
+{
+        if (position.NotNull())
+        {
+                Node* nodeToDelete = position.First();
+                Node* prevNode = nodeToDelete->prev;
+                Node* nextNode = nodeToDelete->next;
+
+
+                if (prevNode != nullptr)
+                {
+                        prevNode->next = nextNode;
+                }
+                else
+                {
+                        head = nextNode;
+                }
+
+
+                if (nextNode != nullptr)
+                {
+                        nextNode->prev = prevNode;
+                }
+                else
+                {
+                        tail = prevNode;
+                }
+
+
+                delete nodeToDelete;
+                size--;
+
+
+                return lit(nextNode);
+        }
+
+
+        return lit(nullptr);
+}

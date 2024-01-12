@@ -1,0 +1,107 @@
+﻿#include<iostream>
+#include"others.h"
+#include"bank.h"
+
+
+
+
+void defaultinputs(Bank& b)
+{
+        // DEFAULT ENTRIES TO SUPPORT THE BANK
+
+
+        Transaction temp(Time(1, 23), Date(1, 2, 2019), 1, 1200);
+        Transaction temp1(Time(3, 43), Date(3, 11, 2018), 2, 1000);
+        Transaction temp2(Time(4, 33), Date(4, 2, 2009), 1, 1000);
+        Transaction temp3(Time(5, 3), Date(1, 1, 2011), 2, 2200);
+        Transaction temp4(Time(6, 25), Date(12, 2, 2019), 1, 3500);
+        Transaction temp5(Time(1, 23), Date(15, 12, 2020), 2, 4200);
+        Transaction temp6(Time(11, 42), Date(1, 4, 2004), 1, 990);
+        Transaction temp7(Time(16, 11), Date(1, 21, 2009), 2, 1200);
+        b.addAccount("Eiman", 12000);
+        b.addAccount("Maryam", 10000);
+        b.addAccount("Junaid", 13000);
+        b.addAccount("Waleed", 15000);
+        b.addTransaction(temp, 0);
+        b.addTransaction(temp1, 0);
+        b.addTransaction(temp2, 1);
+        b.addTransaction(temp3, 1);
+        b.addTransaction(temp4, 2);
+        b.addTransaction(temp5, 2);
+        b.addTransaction(temp6, 3);
+        b.addTransaction(temp7, 3);
+}
+using namespace std;
+
+
+int main()
+{
+
+
+        Bank b;
+        defaultinputs(b);
+        cout << "______________________________________________________________________________________________________________";
+        cout << "\n\n-------------------------W E L C O M E  T O  T H E  B A N K  O F  F A S T  N U C E S-------------------------\n";
+        cout << "_______________________________________________________________________________________________________________";
+        int opt;
+        cout << "\n\n\t\t\t\t\t\tP R O C E S S I N G \n\n";
+b:        cout << "\t\t\t\t\tSelect Operation you want to execute : \n\t\t\t\t\t1.Add a new account\n\t\t\t\t\t2.Perform a new Transaction\n\t\t\t\t\t3.Delete an account\n\t\t\t\t\t4.Merge any two accounts\n\t\t\t\t\t5.Display details\n\t\t\t\t\t6.Exit\n";
+        cout << "\t\t\t\t\t\tYour options : ";
+a:        cin >> opt;
+        if (opt != 1 && opt != 2 && opt != 3 && opt != 4 && opt != 5 && opt != 6) {
+                cout << "Invalid choice.Chose again!!\n";
+                goto a;
+        }
+        while (opt != 6)
+        {
+                if (opt == 1)
+                {
+                        cout << "\nD E P A R T M E N T  O F  N E W  A C C O U N T \n\n";
+                        b.AddAccount();
+                        cout << endl;
+                        goto b;
+                }
+                else if (opt == 2)
+                {
+                        cout << "\nD E P A R T M E N T  O F  A D D I N G  T R A N S A C T I O N \n\n";
+                        b.AddTransaction();
+                        cout << endl;
+                        goto b;
+                }
+                else if (opt == 3)
+                {
+                        cout << "\nD E P A R T M E N T  O F  D E L E T I O N \n\n";
+                        int id;
+                        cout << "Enter id of account you want to delete : ";
+                        cin >> id;
+                        b.deleteaccount(id);
+                        cout << endl;
+                        goto b;
+                }
+                else if (opt == 4)
+                {
+                        cout << "\nD E P A R T M E N T  O F  M E R G I N G  T W O  A C C O U N T S \n\n";
+                        b.MergeAccounts();
+                        cout << endl;
+                        goto b;
+                }
+                else if (opt == 5)
+                {
+                        cout << "\nD I S P L A Y  B A N K  D E T A I L S : A C C O U N T S  A N D  T R A N S A C T I O N S  \n\n";
+                        b.DisplayBankDetail();
+                        cout << endl;
+                        goto b;
+                }
+
+
+        }
+        if (opt == 6)
+        {
+                system("cls");
+                cout << "\n\n______________________________________________E X I T___________________________________________________________";
+                cout << "\n\n----------------------------T H A N K  Y O U  F O R  Y O U R  V I S I T------------------------------------\n";
+                cout << "_______________________________________________________________________________________________________________";
+        }
+
+
+}

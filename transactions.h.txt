@@ -1,0 +1,129 @@
+﻿#include<iostream>
+#include"others.h"
+
+
+using namespace std;
+
+
+class Transaction
+{
+private:
+        int trans_ID;
+        Time trans_time;                //time and date class have been defined in others.h
+        Date trans_date;
+        int trans_type;
+        int trans_amount;
+public:
+        Transaction();
+        Transaction(Time t, Date d, int type, int);
+        Transaction operator=(Transaction& copy);
+        int gettype();
+        int getid();
+        int getamount();
+        void InputDetail(int n);
+        void DisplayDetail();
+        void setid(int n)
+        {
+                trans_ID = n;
+        }
+        ~Transaction();
+};
+
+
+Transaction::Transaction()
+{
+        trans_ID = 0;
+        trans_amount = 0;
+        trans_type = 0;
+}
+
+
+Transaction::Transaction(Time t, Date d, int type, int a)
+{
+        trans_ID = 0;
+        trans_time = t;
+        trans_amount = a;
+        trans_date = d;
+        trans_type = type;
+}
+
+
+Transaction Transaction::operator=(Transaction& copy)
+{
+        if (this != &copy) {
+                trans_ID = copy.trans_ID;
+                trans_time = copy.trans_time;
+                trans_amount = copy.trans_amount;
+                trans_date = copy.trans_date;
+                trans_type = copy.trans_type;
+        }
+        return (*this);
+}
+
+
+//this return the type of transaction that has been taken place
+int Transaction::gettype()
+{
+        return trans_type;
+}
+
+
+//return the transaction_ID 
+int Transaction::getid() { return trans_ID; }
+
+
+//this return the amount that has been transacted
+int Transaction::getamount() { return trans_amount; }
+
+
+//this prompt the user to enter detail of the transaction
+void Transaction::InputDetail(int n)
+{
+        trans_ID = n;
+        cout << "Transaction ID : " << trans_ID << endl;
+        cout << "Enter time of transaction : " << endl;
+        trans_time.input();
+        cout << "Enter date of transaction : " << endl;
+        trans_date.input();
+        cout << "Enter the amount transacted : ";
+        cin >> trans_amount;
+        int opt;
+        cout << "Select type of transaction : \n1.Credit \n2.Debit\n";
+a:        cin >> opt;
+        if (opt != 1 && opt != 2) {
+                cout << "Invalid input";
+                goto a;
+        }
+        else if (opt == 1)
+                cout << "Your transaction type is Credit";
+        else if (opt == 2)
+                cout << "Your transaction typr is Debit";
+
+
+        trans_type = opt;
+}
+
+
+//this display the details of all the transation done 
+void Transaction::DisplayDetail()
+{
+        cout << endl;
+        cout << "Transaction ID : " << trans_ID << endl;
+        cout << "Transaction ";
+        trans_time.display();
+        cout << "Transaction Date : ";
+        trans_date.display();
+        cout << "Amount transacted : " << trans_amount << endl;
+        if (trans_type == 1)
+                cout << "Transaction is credit based" << endl;
+        else if (trans_type == 2)
+                cout << "Tansaction type is debit based" << endl;
+}
+
+
+Transaction::~Transaction()
+{
+        trans_ID = 0;
+        trans_amount = 0;
+        trans_type = 0;
+}

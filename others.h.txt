@@ -1,0 +1,92 @@
+﻿#pragma once
+#include<iostream>
+using namespace std;
+
+
+class Time
+{
+private:
+        int hour;
+        int min;
+public:
+        Time()
+        {
+                hour = 0;
+                min = 0;
+        }
+        Time(int h, int m)
+        {
+                hour = h;
+                min = m;
+        }
+        Time operator=(const Time& t)
+        {
+                hour = t.hour;
+                min = t.min;
+                return(*this);
+        }
+        void input()
+        {
+                cout << "Enter hour : ";
+                cin >> hour;
+                cout << "Enter minutes : ";
+                cin >> min;
+        }
+        void display()
+        {
+                cout << "Time : " << hour << " : " << min << endl;
+        }
+        ~Time()
+        {
+
+
+        }
+};
+
+
+class Date
+{
+private:
+        int day;
+        int month;
+        int year;
+public:
+        Date()
+        {
+                day = 0;
+                month = 0;
+                year = 0;
+        }
+        Date(int d, int m, int y)
+        {
+                day = d;
+                month = m;
+                year = y;
+        }
+        Date operator=(Date& d)
+        {
+                day = d.day;
+                month = d.month;
+                year = d.year;
+                return (*this);
+        }
+        void input()
+        {
+                cout << "Enter numeric entries " << endl;
+                cout << "Enter date : ";
+                cin >> day;
+                cout << "Enter month : ";
+                cin >> month;
+                cout << "Enter year : ";
+                cin >> year;
+
+
+        }
+        void display()
+        {
+                cout << day << " - " << month << " - " << year << endl;
+
+
+        }
+        ~Date() { }
+};
